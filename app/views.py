@@ -10,54 +10,60 @@ from django.core.mail import send_mail
 # Create your views here.
 def home(request):
     return render(request,'home.html')
+
+def About(request):
+    return render(request,'about.html')
+
+
+def Contact(request):
+    return render(request,'contact.html')
+
 def profile(request):
     return render(request,'profile.html')
 
 
-def sign_up(request):
-    if request.method == "POST":
-        fm = SignUpForm(request.POST)
+def User_SignUp(request):
+    if request.method=='POST':
+        fm=SignUpForm(request.POST)
         if fm.is_valid():
-            EMAIL=fm.cleaned_data['email']
-            user=fm.save()
-            login(request,user)
-            messages.success(request, 'Account Created Successfully !!')
-            send_mail(
-                'sending mail',
-                'preparing',
-                'priyakota44@gmail.com',
-                [str(EMAIL)],
-                fail_silently=False,
-            )
-            fm = SignUpForm()
-        return render(request, 'sign.html', {'form': fm})
-
+            Email=fm.cleaned_data['email']
+            messages.success(request,'Successfully Registered')
+            send_mail(' Registration Successfull', 'Signup and Registration Was Successfull Congratulations Now You can read and Write Blogs On My Website.',
+                      'priyakota44@gmail.com', [str(Email)], fail_silently=False)
+            print("Form is Validated...")
+            print("Email sent was SuccessFull...")
+            fm.save()
+            
+            return HttpResponseRedirect('/home/home')
     else:
-        fm = SignUpForm()
+        fm=SignUpForm()
+    return render(request,'signup.html',{"form":fm})
 
-    return render(request,'sign.html', {'form':fm})
 
-
-def user_login(request):
+def User_Login(request):
+    print(request.user)
     if not request.user.is_authenticated:
-        if request.method == "POST":
-            fm = AuthenticationForm(request=request, data=request.POST)
+        if request.method=="POST":
+            fm=AuthenticationForm(request=request,data=request.POST)
             if fm.is_valid():
-                uname = fm.cleaned_data['username']
-                upass = fm.cleaned_data['password']
-                user = authenticate(username=uname, password=upass)
+                un=fm.cleaned_data['username']
+                up=fm.cleaned_data['password']
+                user=authenticate(username=un,password=up)
+
                 if user is not None:
-                    login(request, user)
-                    messages.success(request, 'Logged in successfully !!')
-                    return HttpResponseRedirect('/4/')
+                    login(request,user)
+                    messages.success(request,'Logged in Successfully')
+
+                    return HttpResponseRedirect('/home/profile')
+
         else:
-            fm = AuthenticationForm()
-        return render(request ,'login.html', {'form':fm})
+            fm=AuthenticationForm()
+        return render(request,'login.html',{"form":fm})
     else:
-        return HttpResponseRedirect('/4/')
+        return HttpResponseRedirect('/home/home')
 
 def user_logout(request):
     if request.method == 'POST':
         logout(request)
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/home/home')
     return render(request,'logout.html')

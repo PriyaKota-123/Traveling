@@ -1,11 +1,44 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User Profile Page...!!</title>
+    <link rel="stylesheet" href="{% static  'css/bootstrap.min.css' %}">
+    <style>
+    .success{
+    color:green;
+    }
+        .er{
+  color:red;
+  }
+</style>
 </head>
-<body>
-<h1>hi</h1>
+<body bgcolor="cyan">
+<h1> Welcome to Profile Page</h1>
+ <h3>Welcome {{name}}</h3>
 
+
+ {% if messages %}
+  {% for message in messages %}
+   <small {% if message.tags %} class="{{message.tags}}" {% endif %}>{{message}}</small>
+  {% endfor %}
+ {% endif %}
+
+<form action="" method="post" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+       <p>{{ error }}</p>
+    {% endfor %}
+  {% endif %}
+
+  {% for fm in form %}
+   {{fm.label_tag}} {{fm}} {{fm.errors|striptags}} <br> <br>
+  {% endfor %}
+  <input type="submit"  class="btn btn-primary" value="Save"><br><br>
+ </form>
+ <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+ <a href="{% url 'home' %}" class="btn btn-info">Home</a>
 </body>
 </html>
